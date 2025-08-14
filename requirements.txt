@@ -1,0 +1,16 @@
+alibi-detect
+dvc[all]
+python-box
+jupyter
+pandas
+sqlalchemy
+psycopg2-binary
+matplotlib
+seaborn
+plotly-express
+scikit-learn==1.2.2
+xgboost
+eli5
+uvicorn
+fastapi
+csv2md
