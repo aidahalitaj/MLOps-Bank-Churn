@@ -1,3 +1,3 @@
 #!/bin/sh
-dvc exp run -S 'train.params.n_estimators=range(50, 200, 30)' \
--S 'train.params.max_depth=range(10, 25, 5)' --queue
+dvc exp run -S 'model.random_forest.n_estimators=range(50, 200, 50)' \
+            -S 'model.random_forest.max_depth=range(5, 20, 5)' --queue
