@@ -1,0 +1,49 @@
+random_state: 42
+
+data:
+  raw_dir: data/raw
+  countries: ['Spain', 'France']
+  file_pattern: "Churn_Modelling_{country}.csv"
+
+features:
+  cols:
+    - CreditScore
+    - Age
+    - Tenure
+    - Balance
+    - NumOfProducts
+    - HasCrCard
+    - IsActiveMember
+    - EstimatedSalary
+target: Exited
+
+split:
+  test_size: 0.25
+
+model:
+  random_forest:
+    n_estimators: 100
+    max_depth: 10
+  output_dir: models
+  filename: clf-model.joblib
+
+evaluation:
+  threshold: 0.5
+  scoring_metric: f1_score
+
+outputs:
+  reports_dir: reports
+  figures_dir: reports/figures
+  feature_importance_csv: reports/feat_imp.csv
+  metrics_file: reports/metrics.json
+  processed_data_dir: data/processed
+  split_data:
+    X_train: data/processed/X_train.pkl
+    X_test: data/processed/X_test.pkl
+    y_train: data/processed/y_train.pkl
+    y_test: data/processed/y_test.pkl
+
+
+
+  
+    
