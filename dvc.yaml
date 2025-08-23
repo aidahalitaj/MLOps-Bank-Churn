@@ -1,0 +1,49 @@
+stages:
+  prepare:
+    cmd: python src/stages/prepare.py --config=params.yaml
+    deps:
+      - src/stages/prepare.py
+      - data/raw/Churn_Modelling_France.csv
+      - data/raw/Churn_Modelling_Spain.csv
+    params:
+      - data
+      - features
+      - target
+      - split
+      - random_state
+    outs:
+      - data/processed
+
+  train:
+    cmd: python src/stages/train.py --config=params.yaml
+    deps:
+      - src/stages/train.py
+      - data/processed/X_train.pkl
+      - data/processed/y_train.pkl
+    params:
+      - model
+      - random_state
+    outs:
+      - models/clf-model.joblib
+
+  evaluate:
+    cmd: python src/stages/evaluate.py --config=params.yaml
+    deps:
+      - src/stages/evaluate.py
+      - models/clf-model.joblib
+      - data/processed/X_test.pkl
+      - data/processed/y_test.pkl
+    params:
+      - evaluation
+      - outputs
+      - features
+      - random_state
+    outs:
+      - reports/feat_imp.csv:
+          cache: false
+    metrics:
+      - reports/metrics.json:
+          cache: false
+    plots:
+      - reports/figures/cm.png:
+          cache: false

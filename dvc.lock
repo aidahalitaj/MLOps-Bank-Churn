@@ -1,0 +1,133 @@
+schema: '2.0'
+stages:
+  prepare:
+    cmd: python src/stages/prepare.py --config=params.yaml
+    deps:
+    - path: data/raw/Churn_Modelling_France.csv
+      hash: md5
+      md5: f12533323fdb883c0623ae78984ca921
+      size: 314176
+    - path: data/raw/Churn_Modelling_Spain.csv
+      hash: md5
+      md5: 834f6345adabd4460db1e428ccea152f
+      size: 152712
+    - path: src/stages/prepare.py
+      hash: md5
+      md5: 1ddaafc068e53245f793ff4d022c7231
+      size: 1977
+    params:
+      params.yaml:
+        data:
+          raw_dir: data/raw
+          countries:
+          - Spain
+          - France
+          file_pattern: Churn_Modelling_{country}.csv
+        features:
+          cols:
+          - CreditScore
+          - Age
+          - Tenure
+          - Balance
+          - NumOfProducts
+          - HasCrCard
+          - IsActiveMember
+          - EstimatedSalary
+        random_state: 42
+        split:
+          test_size: 0.25
+        target: Exited
+    outs:
+    - path: data/processed
+      hash: md5
+      md5: 884152f4ce1b0251115684809d5b60e5.dir
+      size: 722295
+      nfiles: 4
+  train:
+    cmd: python src/stages/train.py --config=params.yaml
+    deps:
+    - path: data/processed/X_train.pkl
+      hash: md5
+      md5: bc1729c87f5622c2dc5c6a375927f902
+      size: 405494
+    - path: data/processed/y_train.pkl
+      hash: md5
+      md5: 37f9d052fca700efd5a16d72282dd00e
+      size: 135427
+    - path: src/stages/train.py
+      hash: md5
+      md5: 2846a93773e783d88f8f6d1082afa1e5
+      size: 2340
+    params:
+      params.yaml:
+        model:
+          random_forest:
+            n_estimators: 100
+            max_depth: 10
+          output_dir: models
+          filename: clf-model.joblib
+        random_state: 42
+    outs:
+    - path: models/clf-model.joblib
+      hash: md5
+      md5: d69326b1a6db0dfb2b2c8aab5990d98a
+      size: 2819839
+  evaluate:
+    cmd: python src/stages/evaluate.py --config=params.yaml
+    deps:
+    - path: data/processed/X_test.pkl
+      hash: md5
+      md5: 9a78a89261abd73da6ff17fdf24038cf
+      size: 135836
+    - path: data/processed/y_test.pkl
+      hash: md5
+      md5: 2099fe5cf4ca17bc327f32eae50d5532
+      size: 45538
+    - path: models/clf-model.joblib
+      hash: md5
+      md5: d69326b1a6db0dfb2b2c8aab5990d98a
+      size: 2819839
+    - path: src/stages/evaluate.py
+      hash: md5
+      md5: a5df3383de5c42dc5be8609fd2197d8c
+      size: 3910
+    params:
+      params.yaml:
+        evaluation:
+          threshold: 0.5
+          scoring_metric: f1_score
+        features:
+          cols:
+          - CreditScore
+          - Age
+          - Tenure
+          - Balance
+          - NumOfProducts
+          - HasCrCard
+          - IsActiveMember
+          - EstimatedSalary
+        outputs:
+          reports_dir: reports
+          figures_dir: reports/figures
+          feature_importance_csv: reports/feat_imp.csv
+          metrics_file: reports/metrics.json
+          processed_data_dir: data/processed
+          split_data:
+            X_train: data/processed/X_train.pkl
+            X_test: data/processed/X_test.pkl
+            y_train: data/processed/y_train.pkl
+            y_test: data/processed/y_test.pkl
+        random_state: 42
+    outs:
+    - path: reports/feat_imp.csv
+      hash: md5
+      md5: b18ec0070cc614b3a6afa276a2c39290
+      size: 270
+    - path: reports/figures/cm.png
+      hash: md5
+      md5: 1ef617640b6ea1c6433bda64e68b71bf
+      size: 10219
+    - path: reports/metrics.json
+      hash: md5
+      md5: 63063a1de7dcd3d98dee97609515f715
+      size: 73
