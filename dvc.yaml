@@ -21,8 +21,14 @@ stages:
       - data/processed/X_train.pkl
       - data/processed/y_train.pkl
     params:
-      - model
+      # - model
       - random_state
+      - model.name
+      - models.random_forest
+      - models.svm
+      - models.xgboost
+      - model.logistic_regression
+      - model.decision_tree
     outs:
       - models/clf-model.joblib
 

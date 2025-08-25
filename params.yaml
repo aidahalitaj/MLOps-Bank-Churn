@@ -21,7 +21,7 @@ split:
   test_size: 0.25
 
 model:
-  name: logistic_regression  # 👈 Active model
+  name: decision_tree  # 👈 Active model
 
 models:
   random_forest:
@@ -54,14 +54,6 @@ models:
 model_output:
   dir: models
   filename: clf-model.joblib
-
-
-# model:
-#   random_forest:
-#     n_estimators: 200
-#     max_depth: 10
-#   output_dir: models
-#   filename: clf-model.joblib
 
 evaluation:
   threshold: 0.5
