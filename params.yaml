@@ -21,7 +21,7 @@ split:
   test_size: 0.25
 
 model:
-  name: random_forest  # 👈 Active model
+  name: logistic_regression  # 👈 Active model
 
 models:
   random_forest:

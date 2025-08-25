@@ -87,7 +87,7 @@ def evaluate_pipeline(config_path):
     project_path, _ = get_project_paths()
     params = load_params(config_path)
 
-    model_path = project_path / params.model.output_dir / params.model.filename
+    model_path = project_path / params.model_output.dir / params.model_output.filename
     model = load(model_path)
     X_test, y_test = load_evaluation_data(params, project_path)
 

@@ -56,22 +56,18 @@ stages:
       size: 135427
     - path: src/stages/train.py
       hash: md5
-      md5: 2846a93773e783d88f8f6d1082afa1e5
-      size: 2340
+      md5: ecc768d23bd04949e6597a5bdf6adfbf
+      size: 3704
     params:
       params.yaml:
         model:
-          random_forest:
-            n_estimators: 200
-            max_depth: 10
-          output_dir: models
-          filename: clf-model.joblib
+          name: logistic_regression
         random_state: 42
     outs:
     - path: models/clf-model.joblib
       hash: md5
-      md5: 702e3aab4e19e545ccda6bf5f246db0c
-      size: 5744639
+      md5: e501e323bcf2a74cd3b947b270ac8d43
+      size: 1722
   evaluate:
     cmd: python src/stages/evaluate.py --config=params.yaml
     deps:
@@ -85,12 +81,12 @@ stages:
       size: 45538
     - path: models/clf-model.joblib
       hash: md5
-      md5: 702e3aab4e19e545ccda6bf5f246db0c
-      size: 5744639
+      md5: e501e323bcf2a74cd3b947b270ac8d43
+      size: 1722
     - path: src/stages/evaluate.py
       hash: md5
-      md5: a5df3383de5c42dc5be8609fd2197d8c
-      size: 3910
+      md5: 4864382519006d034d71254744f5fd86
+      size: 3917
     params:
       params.yaml:
         evaluation:
@@ -121,13 +117,13 @@ stages:
     outs:
     - path: reports/feat_imp.csv
       hash: md5
-      md5: 79aab4e8759bdfee001acce75d6673a8
-      size: 273
+      md5: 05fffc8b468748b691ec4050d93eddda
+      size: 220
     - path: reports/figures/cm.png
       hash: md5
-      md5: f43862e0624f61e301047e6b11c0e6e0
-      size: 9880
+      md5: f6dd4a2258f3761246f0aa9a777475d3
+      size: 10836
     - path: reports/metrics.json
       hash: md5
-      md5: c72ea836c49dfe90139171c4d7e9270e
-      size: 73
+      md5: 4483db42ef589e3988b36d3b1fec4bb1
+      size: 74
