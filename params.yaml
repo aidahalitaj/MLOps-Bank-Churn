@@ -21,11 +21,47 @@ split:
   test_size: 0.25
 
 model:
+  name: random_forest  # 👈 Active model
+
+models:
   random_forest:
     n_estimators: 200
     max_depth: 10
-  output_dir: models
+    random_state: 42
+
+  logistic_regression:
+    penalty: l2
+    C: 1.0
+    solver: liblinear
+    random_state: 42
+
+  decision_tree:
+    max_depth: 8
+    criterion: gini
+    random_state: 42
+
+  svm:
+    kernel: rbf
+    C: 1.0
+    gamma: scale
+
+  xgboost:
+    n_estimators: 100
+    max_depth: 6
+    learning_rate: 0.1
+    subsample: 0.8
+
+model_output:
+  dir: models
   filename: clf-model.joblib
+
+
+# model:
+#   random_forest:
+#     n_estimators: 200
+#     max_depth: 10
+#   output_dir: models
+#   filename: clf-model.joblib
 
 evaluation:
   threshold: 0.5
