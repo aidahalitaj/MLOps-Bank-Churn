@@ -1,61 +1,4 @@
-# name: train-model
-
-# on: 
-#   push:
-#   # Only run when code, params, or DVC/data change
-#     paths: 
-#       - "data/**"
-#       - "src/**"
-#       - "params.yaml"
-#       - "dvc.*"
-
-# jobs:
-#   train-model:
-#     runs-on: ubuntu-latest
-#     environment: cloud
-
-#     # Keep minimal permissions; add more only if needed
-#     permissions:
-#       contents: read
-#       id-token: write
-
-#     env:
-#       REPO_TOKEN: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
-#       AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-#       AWS_SECRET_ACCESS_KEY_ID: ${{ secrets.AWS_SECRET_ACCESS_KEY_ID }}
-
-#     steps:
-#       - uses: actions/checkout@v3
-#         with:
-#           ref: ${{ github.event.pull_request.head.sha }}
-#       - uses: iterative/setup-cml@v2
-#       - uses: actions/setup-python@v2
-#         with:
-#           python-version: "3.10"
-
-#       - name: Configure Git user for CML
-#         run: cml ci
-#         env:
-#           REPO_TOKEN: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
-
-#       - name: Install dependencies
-#         run: pip install -r requirements.txt
-
-#       - name: Run training
-#         run: |
-#           dvc pull
-#           dvc exp run
-#           dvc push
-
-      # - name: Log metrics
-      #   run: |
-      #     echo "## Metrics" >> report.md
-      #     dvc metrics show --md >> report.md
-      #     echo "## Feature Importances" >> report.md
-      #     csv2md reports/feat_imp.csv >> report.md
-      #     echo "## Confusion Matrix" >> report.md
-      #     echo '![](reports/figures/cm.png)' >> report.md
-      #     cml comment create report.md
+#!/bin/bash
 
 name: train-model
 on:
@@ -76,14 +19,13 @@ jobs:
       - uses: actions/checkout@v3
         with:
           ref: ${{ github.event.pull_request.head.sha }}
-      # - uses: iterative/setup-cml@v1
-      - uses: iterative/setup-cml@v2
+      - uses: iterative/setup-cml@v1
       - uses: actions/setup-python@v2
         with:
           python-version: "3.10"
-      # - uses: actions/setup-node@v1
-      #   with:
-      #     node-version: '16'
+      - uses: actions/setup-node@v1
+        with:
+          node-version: '16'
       - name: SetupGitUser
         run: cml ci
         env:
@@ -93,7 +35,6 @@ jobs:
           REPO_TOKEN: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          AWS_DEFAULT_REGION: eu-west-2
         run: |
           pip install -r requirements.txt
           dvc pull
