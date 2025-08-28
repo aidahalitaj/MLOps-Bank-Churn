@@ -71,7 +71,7 @@ stages:
           solver: liblinear
           random_state: 42
         models.random_forest:
-          n_estimators: 152
+          n_estimators: 153
           max_depth: 10
           random_state: 42
         models.svm:
@@ -87,8 +87,8 @@ stages:
     outs:
     - path: models/clf-model.joblib
       hash: md5
-      md5: 8406de16e2db544ddb5e4c6496feeba7
-      size: 4359743
+      md5: ccca40cc5ac7c9879e69eabc327ce034
+      size: 4394319
   evaluate:
     cmd: python src/stages/evaluate.py --config=params.yaml
     deps:
@@ -102,8 +102,8 @@ stages:
       size: 45538
     - path: models/clf-model.joblib
       hash: md5
-      md5: 8406de16e2db544ddb5e4c6496feeba7
-      size: 4359743
+      md5: ccca40cc5ac7c9879e69eabc327ce034
+      size: 4394319
     - path: src/stages/evaluate.py
       hash: md5
       md5: 4864382519006d034d71254744f5fd86
@@ -138,7 +138,7 @@ stages:
     outs:
     - path: reports/feat_imp.csv
       hash: md5
-      md5: b0133688a1bb1db7ba794f5c4c8eee11
+      md5: 19ba888c5b8f342d444dee8fe14d1f32
       size: 271
     - path: reports/figures/cm.png
       hash: md5
@@ -146,5 +146,5 @@ stages:
       size: 10285
     - path: reports/metrics.json
       hash: md5
-      md5: 0ecf61badc6ef6dd6211a6bd09a5e164
+      md5: 90b5a4e42559023229eaa4cbd86b6921
       size: 73
