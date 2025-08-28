@@ -21,11 +21,11 @@ split:
   test_size: 0.25
 
 model:
-  name: decision_tree  # 👈 Active model
+  name: random_forest  # 👈 Active model
 
 models:
   random_forest:
-    n_estimators: 200
+    n_estimators: 100
     max_depth: 10
     random_state: 42
 
