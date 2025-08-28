@@ -41,7 +41,7 @@ jobs:
           node-version: "20"
 
       - name: Install CML
-        uses: iterative/setup-cml@v1
+        uses: iterative/setup-cml@v2
 
       - name: Configure Git user for CML
         run: cml ci
