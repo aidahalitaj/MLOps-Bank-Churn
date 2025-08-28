@@ -47,12 +47,12 @@ jobs:
           dvc exp run
           dvc push
 
-      - name: Log metrics
-        run: |
-          echo "## Metrics" >> report.md
-          dvc metrics show --md >> report.md
-          echo "## Feature Importances" >> report.md
-          csv2md reports/feat_imp.csv >> report.md
-          echo "## Confusion Matrix" >> report.md
-          echo '![](reports/figures/cm.png)' >> report.md
-          cml comment create report.md
+      # - name: Log metrics
+      #   run: |
+      #     echo "## Metrics" >> report.md
+      #     dvc metrics show --md >> report.md
+      #     echo "## Feature Importances" >> report.md
+      #     csv2md reports/feat_imp.csv >> report.md
+      #     echo "## Confusion Matrix" >> report.md
+      #     echo '![](reports/figures/cm.png)' >> report.md
+      #     cml comment create report.md
