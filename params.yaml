@@ -25,7 +25,7 @@ model:
 
 models:
   random_forest:
-    n_estimators: 150
+    n_estimators: 159
     max_depth: 10
     random_state: 42
 
