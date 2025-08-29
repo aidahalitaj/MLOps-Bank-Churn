@@ -15,6 +15,7 @@ jobs:
     permissions:
       contents: read
       id-token: write
+
     steps:
       - uses: actions/checkout@v3
         # with:
@@ -35,12 +36,18 @@ jobs:
           REPO_TOKEN: ${{ secrets.PERSONAL_ACCESS_TOKEN_I }}
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Run training
         run: |
-          pip install -r requirements.txt
           dvc pull
           dvc exp run
           dvc push
-          # Create CML report
+
+      - name: Log metrics
+        run: |
           echo "## Metrics" >> report.md
           dvc metrics show --md >> report.md
           echo "## Feature Importances" >> report.md
