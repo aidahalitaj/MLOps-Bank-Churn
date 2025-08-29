@@ -3,11 +3,11 @@
 name: train-model
 on:
   push:
-    # paths:
-    #   - "data/**"
-    #   - "src/**"
-    #   - "params.yaml"
-    #   - "dvc.*"
+    paths:
+      - "data/**"
+      - "src/**"
+      - "params.yaml"
+      - "dvc.*"
 jobs:
   train-model:
     runs-on: ubuntu-latest
@@ -48,7 +48,6 @@ jobs:
 
       - name: Log metrics
         run: |
-          # Create CML report
           echo "## Metrics" >> report.md
           dvc metrics show --md >> report.md
           echo "## Feature Importances" >> report.md
