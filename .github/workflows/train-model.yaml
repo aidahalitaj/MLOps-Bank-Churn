@@ -36,12 +36,18 @@ jobs:
         run: cml ci
         env:
           REPO_TOKEN: ${{ secrets.PERSONAL_ACCESS_TOKEN_I }}
-      - name: TrainModel
+      
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Run training
         run: |
-          pip install -r requirements.txt
           dvc pull
           dvc exp run
           dvc push
+
+      - name: Log metrics
+        run: |
           # Create CML report
           echo "## Metrics" >> report.md
           dvc metrics show --md >> report.md
