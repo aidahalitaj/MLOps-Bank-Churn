@@ -1,0 +1,25 @@
+{
+  "data": [
+    {
+      "CreditScore": 600,
+      "Age": 50,
+      "Tenure": 2,
+      "Balance": 0,
+      "NumOfProducts": 1,
+      "HasCrCard": 1,
+      "IsActiveMember": 1,
+      "EstimatedSalary": 101348.88
+    },
+    {
+      "CreditScore": 900,
+      "Age": 39,
+      "Tenure": 21,
+      "Balance": 0,
+      "NumOfProducts": 2,
+      "HasCrCard": 0,
+      "IsActiveMember": 0,
+      "EstimatedSalary": 93826.63
+    }
+  ]
+}
+
