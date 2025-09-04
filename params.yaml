@@ -72,6 +72,12 @@ outputs:
     y_test: data/processed/y_test.pkl
 
 
+# outputs:
+#   reports_dir: reports
+#   figures_subdir: figures
+#   feature_importance_filename: feat_imp.csv
+#   metrics_filename: metrics.json
+#   processed_data_dir: data/processed
 
   
     

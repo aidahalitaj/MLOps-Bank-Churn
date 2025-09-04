@@ -148,3 +148,41 @@ stages:
       hash: md5
       md5: c72ea836c49dfe90139171c4d7e9270e
       size: 73
+  train_drift_detector:
+    cmd: python src/stages/drift_detector.py --config=params.yaml
+    deps:
+    - path: data/processed
+      hash: md5
+      md5: 884152f4ce1b0251115684809d5b60e5.dir
+      size: 722295
+      nfiles: 4
+    - path: models/clf-model.joblib
+      hash: md5
+      md5: 702e3aab4e19e545ccda6bf5f246db0c
+      size: 5744639
+    - path: src/stages/drift_detector.py
+      hash: md5
+      md5: 6614f2e7764fdd8c2b9bdbdba4481527
+      size: 1398
+    params:
+      params.yaml:
+        model_output:
+          dir: models
+          filename: clf-model.joblib
+        outputs:
+          reports_dir: reports
+          figures_dir: reports/figures
+          feature_importance_csv: reports/feat_imp.csv
+          metrics_file: reports/metrics.json
+          processed_data_dir: data/processed
+          split_data:
+            X_train: data/processed/X_train.pkl
+            X_test: data/processed/X_test.pkl
+            y_train: data/processed/y_train.pkl
+            y_test: data/processed/y_test.pkl
+    outs:
+    - path: models/drift_detector
+      hash: md5
+      md5: 137c27ab299b43ed1b397b37781dd3d0.dir
+      size: 362006
+      nfiles: 3
