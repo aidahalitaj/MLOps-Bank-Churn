@@ -80,4 +80,5 @@ outputs:
 #   processed_data_dir: data/processed
 
   
-    
+drift_detect:
+  min_batch_size: 50
