@@ -33,7 +33,7 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-DATABASE_URL = os.environ['DATABASE_URL'].replace('postgress://', 'postgresql://')
+DATABASE_URL = os.environ['DATABASE_URL'].replace('postgres://', 'postgresql://')
 
 params = load_params(params_path='params.yaml')
 
