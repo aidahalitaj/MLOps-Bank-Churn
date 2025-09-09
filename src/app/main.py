@@ -90,6 +90,7 @@ async def predict(info: Request = Body(..., example={
     input_data = pd.DataFrame(data)
     probs = model.predict_proba(input_data)[:,0]
     probs = probs.tolist()
+    collect_batch(json_list) 
     return probs
 
 @app.get("/drift_data")
