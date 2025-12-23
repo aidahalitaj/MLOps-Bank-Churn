@@ -1,6 +1,18 @@
 # E2E ML project using open-source MLOps tools
-This repository started from Alexis’ “Open Source MLOps in 4 Weeks” tutorial on O’Reilly: https://www.oreilly.com/live-events/open-source-mlops-in-4-weeks/0636920080215/.
-While the general project layout comes from the tutorial, the implementation here has been heavily adapted. I refactored parts of the codebase, improved the folder structure, and reorganised files to better fit a real project workflow.
+This repository is my implementation of an end-to-end ML project using open-source MLOps tools, based on Alexis’ O’Reilly tutorial: https://www.oreilly.com/live-events/open-source-mlops-in-4-weeks/0636920080215/.
+
+I used the tutorial as a starting point for the overall structure, but I refactored and reorganised parts of the codebase to make it clearer and more maintainable, and to better match how I would set up a real project.
+
+**Branches and project progression**
+
+I kept the work split by week to show how the project evolved step by step:
+
+- week-1 → initial setup and baseline approach
+- week-2 → incremental improvements and organisation changes
+- week-3 → further iterations and experimentation
+- week-4 → the most complete version of the project
+
+If you want to see the final state, use the week-4 branch.
 
 ## Problem Description and Dataset
 This dataset contains 10,000 records, each of which corresponds to a different bank's user. The target is `Exited`, a binary variable that describes whether the user decided to leave the bank. There are row and customer identifiers, four columns describing personal information about the user (surname, location, gender and age), and some other columns containing information related to the loan (such as credit score, the current balance in the user's account and whether they are an active member among others).
@@ -14,8 +26,8 @@ The objective is to train an ML model that returns the probability of a customer
 ## Setup
 Python 3.8+ is required to run code from this repo.
 ```
-$ git clone https://github.com/alex000kim/open-source-mlops-e2e
-$ cd open-source-mlops-e2e
+$ git clone https://github.com/aidahalitaj/bank-churn-mlops.git
+$ cd bank-churn-mlops
 $ virtualenv -p python3 .venv
 $ source .venv/bin/activate
 $ pip install -r requirements.txt
