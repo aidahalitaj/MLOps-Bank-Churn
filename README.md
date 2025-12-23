@@ -1,4 +1,6 @@
 # E2E ML project using open-source MLOps tools
+This repository started from Alexis’ “Open Source MLOps in 4 Weeks” tutorial on O’Reilly: https://www.oreilly.com/live-events/open-source-mlops-in-4-weeks/0636920080215/.
+While the general project layout comes from the tutorial, the implementation here has been heavily adapted. I refactored parts of the codebase, improved the folder structure, and reorganised files to better fit a real project workflow.
 
 ## Problem Description and Dataset
 This dataset contains 10,000 records, each of which corresponds to a different bank's user. The target is `Exited`, a binary variable that describes whether the user decided to leave the bank. There are row and customer identifiers, four columns describing personal information about the user (surname, location, gender and age), and some other columns containing information related to the loan (such as credit score, the current balance in the user's account and whether they are an active member among others).
