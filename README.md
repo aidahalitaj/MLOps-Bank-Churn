@@ -7,12 +7,12 @@ I used the tutorial as a starting point for the overall structure, but I refacto
 
 I kept the work split by week to show how the project evolved step by step:
 
-- week-1 → initial setup and baseline approach
-- week-2 → incremental improvements and organisation changes
-- week-3 → further iterations and experimentation
-- week-4 → the most complete version of the project
-
-If you want to see the final state, use the week-4 branch.
+- `main` contains the latest version.
+- `week-1` to `week-4` keep the week-by-week progress from the course structure:
+    - week-1 → initial setup and baseline approach
+    - week-2 → incremental improvements and organisation changes
+    - week-3 → further iterations and experimentation
+    - week-4 → the most complete version of the project
 
 ## Problem Description and Dataset
 This dataset contains 10,000 records, each of which corresponds to a different bank's user. The target is `Exited`, a binary variable that describes whether the user decided to leave the bank. There are row and customer identifiers, four columns describing personal information about the user (surname, location, gender and age), and some other columns containing information related to the loan (such as credit score, the current balance in the user's account and whether they are an active member among others).
