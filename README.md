@@ -9,10 +9,10 @@ I kept the work split by week to show how the project evolved step by step:
 
 - `main` contains the latest version.
 - `week-1` to `week-4` keep the week-by-week progress from the course structure:
-    - week-1 → initial setup and baseline approach
-    - week-2 → incremental improvements and organisation changes
-    - week-3 → further iterations and experimentation
-    - week-4 → the most complete version of the project
+    - week-1 → kick-starting the ML project (project lifecycle, initial structure, baseline training)
+    - week-2 → ML pipelines, reproducibility, and experimentation (moving from notebook workflow to a reproducible pipeline, versioning artefacts)
+    - week-3 → CI/CD for ML and an ML-based Web API (testing, automation, FastAPI integration)
+    - week-4 → monitoring for ML projects (data drift monitoring, Alibi Detect, monitoring workflow)
 
 ## Problem Description and Dataset
 This dataset contains 10,000 records, each of which corresponds to a different bank's user. The target is `Exited`, a binary variable that describes whether the user decided to leave the bank. There are row and customer identifiers, four columns describing personal information about the user (surname, location, gender and age), and some other columns containing information related to the loan (such as credit score, the current balance in the user's account and whether they are an active member among others).
