@@ -3,120 +3,214 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Bank Customer Churn Predictor</title>
+  <title>ChurnPredict — Customer Churn Risk Assessment</title>
   <link rel="stylesheet" href="/static/style.css">
 </head>
 <body>
 
-  <header class="header">
-    <h1>Bank Customer Churn Predictor</h1>
-    <p>Random Forest classifier trained on 10,000 bank customer records. Predicts whether a customer will leave the bank based on key demographic and account features.</p>
-    <div class="metrics">
-      <span class="metric">F1 Score: 0.54</span>
-      <span class="metric">ROC AUC: 0.87</span>
+  <!-- Nav bar -->
+  <nav class="navbar">
+    <span class="navbar-brand">ChurnPredict</span>
+    <span class="navbar-tech">FastAPI · scikit-learn · Fly.io</span>
+  </nav>
+
+  <!-- Hero section -->
+  <section class="hero">
+    <h1 class="hero-title">Customer Churn Risk Assessment</h1>
+    <p class="hero-subtitle">Predict whether a bank customer will leave — Random Forest · 10K records</p>
+    <div class="hero-metrics">
+      <span class="metric-pill">F1: 0.54</span>
+      <span class="metric-pill">AUC: 0.87</span>
     </div>
-  </header>
+  </section>
 
-  <main class="container">
+  <!-- Sample profile cards -->
+  <section class="profiles-section">
+    <span class="profiles-label">SAMPLE PROFILES</span>
+    <div class="profiles-row">
+      <button type="button" class="profile-card" id="profile-loyal"
+        data-creditscore="750" data-age="35" data-tenure="8"
+        data-balance="76000" data-numofproducts="2" data-hascrcard="1"
+        data-isactivemember="1" data-estimatedsalary="101000">
+        <span class="profile-icon" aria-hidden="true">👤</span>
+        <span class="profile-name">Loyal</span>
+        <span class="profile-desc">35yo · 8yr · Active</span>
+      </button>
+      <button type="button" class="profile-card" id="profile-atrisk"
+        data-creditscore="580" data-age="52" data-tenure="1"
+        data-balance="120000" data-numofproducts="1" data-hascrcard="1"
+        data-isactivemember="0" data-estimatedsalary="42000">
+        <span class="profile-icon" aria-hidden="true">👤</span>
+        <span class="profile-name">At-Risk</span>
+        <span class="profile-desc">52yo · 1yr · Inactive</span>
+      </button>
+      <button type="button" class="profile-card" id="profile-new"
+        data-creditscore="680" data-age="28" data-tenure="0"
+        data-balance="15000" data-numofproducts="1" data-hascrcard="0"
+        data-isactivemember="1" data-estimatedsalary="55000">
+        <span class="profile-icon" aria-hidden="true">👤</span>
+        <span class="profile-name">New</span>
+        <span class="profile-desc">28yo · 0yr · Active</span>
+      </button>
+    </div>
+  </section>
 
-    <form id="predict-form" class="card">
-      <h2>Customer Details</h2>
+  <!-- Two-panel area -->
+  <main class="panels">
 
-      <div class="form-grid">
+    <!-- LEFT PANEL — Form -->
+    <div class="panel card">
+      <h2 class="panel-title">Customer Details</h2>
+      <form id="predict-form" autocomplete="off">
+        <div class="form-grid">
 
-        <div class="form-group">
-          <label for="CreditScore">Credit Score</label>
-          <input type="number" id="CreditScore" name="CreditScore"
-                 min="300" max="850" placeholder="650" required>
+          <div class="form-group">
+            <label for="CreditScore">Credit Score</label>
+            <input type="number" id="CreditScore" name="CreditScore"
+                   min="300" max="850" placeholder="650" required>
+            <span class="field-hint">300–850</span>
+          </div>
+
+          <div class="form-group">
+            <label for="Age">Age</label>
+            <input type="number" id="Age" name="Age"
+                   min="18" max="100" placeholder="35" required>
+          </div>
+
+          <div class="form-group">
+            <label for="Tenure">Tenure (years)</label>
+            <input type="number" id="Tenure" name="Tenure"
+                   min="0" max="10" placeholder="5" required>
+          </div>
+
+          <div class="form-group">
+            <label for="Balance">Account Balance</label>
+            <div class="input-prefix-wrap">
+              <span class="input-prefix">$</span>
+              <input type="number" id="Balance" name="Balance"
+                     step="0.01" placeholder="76,000" required>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="NumOfProducts">Num. Products</label>
+            <select id="NumOfProducts" name="NumOfProducts" required>
+              <option value="1">1</option>
+              <option value="2" selected>2</option>
+              <option value="3">3</option>
+              <option value="4">4</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label for="EstimatedSalary">Estimated Salary</label>
+            <div class="input-prefix-wrap">
+              <span class="input-prefix">$</span>
+              <input type="number" id="EstimatedSalary" name="EstimatedSalary"
+                     step="0.01" placeholder="50,000" required>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label>Credit Card</label>
+            <div class="toggle-group">
+              <span class="toggle-label">No</span>
+              <label class="toggle-switch">
+                <input type="checkbox" id="HasCrCard" name="HasCrCard" checked>
+                <span class="toggle-slider"></span>
+              </label>
+              <span class="toggle-label">Yes</span>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label>Active Member</label>
+            <div class="toggle-group">
+              <span class="toggle-label">No</span>
+              <label class="toggle-switch">
+                <input type="checkbox" id="IsActiveMember" name="IsActiveMember" checked>
+                <span class="toggle-slider"></span>
+              </label>
+              <span class="toggle-label">Yes</span>
+            </div>
+          </div>
+
         </div>
 
-        <div class="form-group">
-          <label for="Age">Age</label>
-          <input type="number" id="Age" name="Age"
-                 min="18" max="100" placeholder="35" required>
+        <button type="submit" id="predict-btn" class="btn-predict">Assess Churn Risk</button>
+        <div id="error-message" class="error-message" role="alert"></div>
+      </form>
+    </div>
+
+    <!-- RIGHT PANEL — Risk Insights -->
+    <div class="panel card" id="insights-panel">
+      <h2 class="panel-title">Risk Insights</h2>
+
+      <!-- Placeholder state -->
+      <div id="insights-placeholder" class="insights-placeholder">
+        <span class="placeholder-icon" aria-hidden="true">📊</span>
+        <p>Enter customer details and click predict to see risk analysis</p>
+      </div>
+
+      <!-- Result state (hidden until prediction) -->
+      <div id="insights-result" class="insights-result">
+
+        <div id="result-header" class="result-header">
+          <div class="result-header-left">
+            <span class="result-label-small">PREDICTION</span>
+            <div class="result-prob-row">
+              <span id="result-probability" class="result-probability">—</span>
+              <span class="result-prob-text">churn risk</span>
+            </div>
+          </div>
+          <span id="result-badge" class="result-badge">—</span>
         </div>
 
-        <div class="form-group">
-          <label for="Tenure">Tenure (years)</label>
-          <input type="number" id="Tenure" name="Tenure"
-                 min="0" max="10" placeholder="5" required>
-        </div>
-
-        <div class="form-group">
-          <label for="Balance">Account Balance</label>
-          <input type="number" id="Balance" name="Balance"
-                 step="0.01" placeholder="76000.00" required>
-        </div>
-
-        <div class="form-group">
-          <label for="NumOfProducts">Number of Products</label>
-          <select id="NumOfProducts" name="NumOfProducts" required>
-            <option value="1">1</option>
-            <option value="2">2</option>
-            <option value="3">3</option>
-            <option value="4">4</option>
-          </select>
-        </div>
-
-        <div class="form-group">
-          <label for="EstimatedSalary">Estimated Salary</label>
-          <input type="number" id="EstimatedSalary" name="EstimatedSalary"
-                 step="0.01" placeholder="50000.00" required>
-        </div>
-
-        <div class="form-group">
-          <label>Has Credit Card</label>
-          <div class="toggle-group">
-            <span class="toggle-label">No</span>
-            <label class="toggle-switch">
-              <input type="checkbox" id="HasCrCard" name="HasCrCard" checked>
-              <span class="toggle-slider"></span>
-            </label>
-            <span class="toggle-label">Yes</span>
+        <!-- Gauge bar -->
+        <div class="gauge-container">
+          <div class="gauge-track">
+            <div id="gauge-fill" class="gauge-fill"></div>
           </div>
         </div>
 
-        <div class="form-group">
-          <label>Is Active Member</label>
-          <div class="toggle-group">
-            <span class="toggle-label">No</span>
-            <label class="toggle-switch">
-              <input type="checkbox" id="IsActiveMember" name="IsActiveMember" checked>
-              <span class="toggle-slider"></span>
-            </label>
-            <span class="toggle-label">Yes</span>
+        <!-- Assessment text -->
+        <div id="assessment-box" class="assessment-box">
+          <p id="assessment-text"></p>
+        </div>
+
+        <!-- Key factors 2x2 grid -->
+        <div class="factors-grid">
+          <div class="factor-card" id="factor-age">
+            <span class="factor-name">Age</span>
+            <span class="factor-value" id="factor-age-val">—</span>
+            <span class="factor-risk" id="factor-age-risk">—</span>
+          </div>
+          <div class="factor-card" id="factor-products">
+            <span class="factor-name">Products</span>
+            <span class="factor-value" id="factor-products-val">—</span>
+            <span class="factor-risk" id="factor-products-risk">—</span>
+          </div>
+          <div class="factor-card" id="factor-active">
+            <span class="factor-name">Active Member</span>
+            <span class="factor-value" id="factor-active-val">—</span>
+            <span class="factor-risk" id="factor-active-risk">—</span>
+          </div>
+          <div class="factor-card" id="factor-tenure">
+            <span class="factor-name">Tenure</span>
+            <span class="factor-value" id="factor-tenure-val">—</span>
+            <span class="factor-risk" id="factor-tenure-risk">—</span>
           </div>
         </div>
 
+        <p class="factors-footer"><em>Based on feature importance ranking from the trained model.</em></p>
       </div>
-
-      <button type="submit" id="predict-btn" class="btn-predict">Predict Churn Risk</button>
-
-      <div id="error-message" class="error-message"></div>
-    </form>
-
-    <section id="results-card" class="card results-card">
-      <h2>Prediction Result</h2>
-      <div class="result-header">
-        <span id="result-probability" class="result-probability">—</span>
-        <span id="result-label" class="result-label">—</span>
-      </div>
-      <div class="gauge-container">
-        <div class="gauge-label-row">
-          <span>Low Risk</span>
-          <span>High Risk</span>
-        </div>
-        <div class="gauge-track">
-          <div id="gauge-fill" class="gauge-fill"></div>
-        </div>
-      </div>
-    </section>
+    </div>
 
   </main>
 
+  <!-- Footer -->
   <footer class="footer">
-    <p>MLOps Bank Churn Predictor &middot; Built with FastAPI &amp; scikit-learn &middot;
-      <a href="https://aidahalitaj.github.io" target="_blank" rel="noopener">aidahalitaj.github.io</a></p>
+    <p>Built by Aida Halitaj · <a href="https://aidahalitaj.github.io" target="_blank" rel="noopener">aidahalitaj.github.io</a></p>
   </footer>
 
   <script src="/static/script.js"></script>
