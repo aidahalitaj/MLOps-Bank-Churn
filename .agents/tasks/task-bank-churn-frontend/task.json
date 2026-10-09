@@ -1,0 +1,7 @@
+{
+  "task_id": "task-bank-churn-frontend",
+  "task_description": "Build a portfolio-ready frontend UI for the MLOps Bank Churn prediction app, fix the predict endpoint bug, add a predict_single endpoint, and make DB/drift dependencies optional so the app starts standalone.",
+  "status": "completed",
+  "feature_order": ["FEAT-001", "FEAT-002"],
+  "blocked_reason": null
+}
