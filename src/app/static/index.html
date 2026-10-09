@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Bank Customer Churn Predictor</title>
+  <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+
+  <header class="header">
+    <h1>Bank Customer Churn Predictor</h1>
+    <p>Random Forest classifier trained on 10,000 bank customer records. Predicts whether a customer will leave the bank based on key demographic and account features.</p>
+    <div class="metrics">
+      <span class="metric">F1 Score: 0.54</span>
+      <span class="metric">ROC AUC: 0.87</span>
+    </div>
+  </header>
+
+  <main class="container">
+
+    <form id="predict-form" class="card">
+      <h2>Customer Details</h2>
+
+      <div class="form-grid">
+
+        <div class="form-group">
+          <label for="CreditScore">Credit Score</label>
+          <input type="number" id="CreditScore" name="CreditScore"
+                 min="300" max="850" placeholder="650" required>
+        </div>
+
+        <div class="form-group">
+          <label for="Age">Age</label>
+          <input type="number" id="Age" name="Age"
+                 min="18" max="100" placeholder="35" required>
+        </div>
+
+        <div class="form-group">
+          <label for="Tenure">Tenure (years)</label>
+          <input type="number" id="Tenure" name="Tenure"
+                 min="0" max="10" placeholder="5" required>
+        </div>
+
+        <div class="form-group">
+          <label for="Balance">Account Balance</label>
+          <input type="number" id="Balance" name="Balance"
+                 step="0.01" placeholder="76000.00" required>
+        </div>
+
+        <div class="form-group">
+          <label for="NumOfProducts">Number of Products</label>
+          <select id="NumOfProducts" name="NumOfProducts" required>
+            <option value="1">1</option>
+            <option value="2">2</option>
+            <option value="3">3</option>
+            <option value="4">4</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label for="EstimatedSalary">Estimated Salary</label>
+          <input type="number" id="EstimatedSalary" name="EstimatedSalary"
+                 step="0.01" placeholder="50000.00" required>
+        </div>
+
+        <div class="form-group">
+          <label>Has Credit Card</label>
+          <div class="toggle-group">
+            <span class="toggle-label">No</span>
+            <label class="toggle-switch">
+              <input type="checkbox" id="HasCrCard" name="HasCrCard" checked>
+              <span class="toggle-slider"></span>
+            </label>
+            <span class="toggle-label">Yes</span>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label>Is Active Member</label>
+          <div class="toggle-group">
+            <span class="toggle-label">No</span>
+            <label class="toggle-switch">
+              <input type="checkbox" id="IsActiveMember" name="IsActiveMember" checked>
+              <span class="toggle-slider"></span>
+            </label>
+            <span class="toggle-label">Yes</span>
+          </div>
+        </div>
+
+      </div>
+
+      <button type="submit" id="predict-btn" class="btn-predict">Predict Churn Risk</button>
+
+      <div id="error-message" class="error-message"></div>
+    </form>
+
+    <section id="results-card" class="card results-card">
+      <h2>Prediction Result</h2>
+      <div class="result-header">
+        <span id="result-probability" class="result-probability">—</span>
+        <span id="result-label" class="result-label">—</span>
+      </div>
+      <div class="gauge-container">
+        <div class="gauge-label-row">
+          <span>Low Risk</span>
+          <span>High Risk</span>
+        </div>
+        <div class="gauge-track">
+          <div id="gauge-fill" class="gauge-fill"></div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <footer class="footer">
+    <p>MLOps Bank Churn Predictor &middot; Built with FastAPI &amp; scikit-learn &middot;
+      <a href="https://aidahalitaj.github.io" target="_blank" rel="noopener">aidahalitaj.github.io</a></p>
+  </footer>
+
+  <script src="/static/script.js"></script>
+</body>
+</html>

@@ -1,0 +1,35 @@
+{
+  "id": "FEAT-002",
+  "type": "feat",
+  "description": "Create a clean, portfolio-ready frontend UI served by FastAPI. Add static files (index.html, style.css, script.js) under src/app/static/ and mount them in main.py. The UI has a form for all 8 features, calls POST /predict_single (from FEAT-001), and displays churn probability with a visual gauge and color-coded label. Depends on FEAT-001 for the /predict_single endpoint.",
+  "status": "completed",
+  "steps": [
+    "Step 1 — Create src/app/static/ directory and src/app/static/style.css: Responsive fintech/banking CSS theme. Color scheme: navy/dark-blue headers (#1a2332, #2d4059), clean whites (#f8f9fa, #fff) backgrounds, accent blue (#4a90d9) buttons. Red (#e74c3c) for churn risk, green (#27ae60) for safe. System font stack (Segoe UI, Roboto, sans-serif). Card-based form with subtle box-shadow. Two-column grid on desktop (min-width: 768px), single-column on mobile. Styled toggle switches for HasCrCard and IsActiveMember. Results section with a horizontal gauge/progress bar that fills proportionally to churn probability, color transitioning from green to red. Smooth CSS transitions on result appearance.",
+    "Step 2 — Create src/app/static/script.js: On form submit (preventDefault), collect all 8 feature values from the form inputs. POST to /predict_single as JSON with Content-Type application/json. On success, display: churn probability as percentage (e.g., '73.2%'), fill the gauge bar proportionally, apply red color class when prediction is 'Churn' and green when 'No Churn', show a label like '⚠ High Churn Risk' (red) or '✓ Low Churn Risk' (green). Add loading state on the predict button during the request. Input validation: CreditScore 300-850, Age 18-100, Tenure 0-10, NumOfProducts 1-4. Handle fetch errors gracefully with a visible error message.",
+    "Step 3 — Create src/app/static/index.html: DOCTYPE html5 page linking /static/style.css and /static/script.js. Header section with title 'Bank Customer Churn Predictor' and subtitle describing the model (Random Forest classifier trained on 10K bank records, evaluated with F1=0.54, ROC AUC=0.87). Form with labeled inputs: CreditScore (number, min=300, max=850, placeholder=650), Age (number, min=18, max=100, placeholder=35), Tenure (number, min=0, max=10, placeholder=5), Balance (number, step=0.01, placeholder=76000.00), NumOfProducts (select dropdown with options 1-4), HasCrCard (toggle switch, default 1), IsActiveMember (toggle switch, default 1), EstimatedSalary (number, step=0.01, placeholder=50000.00). Each input has a descriptive label. Predict button with class for styling. Results div (initially hidden) with probability display, gauge bar container, and prediction label. Footer with brief credit.",
+    "Step 4 — Mount static files and root route in src/app/main.py: Add imports: `from fastapi.staticfiles import StaticFiles` and `from fastapi.responses import FileResponse, JSONResponse` (JSONResponse already added in FEAT-001). Add `@app.get('/')` route BEFORE the mount call that returns `FileResponse(Path(__file__).parent / 'static' / 'index.html')`. Then add `app.mount('/static', StaticFiles(directory=Path(__file__).parent / 'static'), name='static')`. The root route MUST come before the mount — otherwise the mount catches '/' and returns 404. Place both after all other endpoint definitions but with @app.get('/') before app.mount."
+  ],
+  "acceptance_criteria": [
+    "GET / returns the index.html page with correct Content-Type text/html",
+    "GET /static/style.css returns valid CSS",
+    "GET /static/script.js returns valid JavaScript",
+    "The form displays all 8 feature inputs with proper labels, types, and constraints",
+    "Submitting the form with valid data calls /predict_single and displays the result",
+    "The result shows churn probability as a percentage with a visual gauge bar",
+    "The prediction label is color-coded: red for Churn, green for No Churn",
+    "The UI is responsive — usable on mobile screens",
+    "The design uses a clean fintech/banking color scheme suitable for a portfolio"
+  ],
+  "verification": [
+    "lsof -ti:8080 | xargs kill -9 2>/dev/null",
+    "Start the app in background: source /Users/aida/Desktop/MLOps-Bank-Churn/.venv/bin/activate && PYTHONPATH=/Users/aida/Desktop/MLOps-Bank-Churn uvicorn src.app.main:app --host 0.0.0.0 --port 8080 &",
+    "Wait 5 seconds for startup, then: curl -s http://localhost:8080/ | head -5 — should show HTML DOCTYPE and page title",
+    "curl -s http://localhost:8080/static/style.css | head -5 — should show CSS content",
+    "curl -s http://localhost:8080/static/script.js | head -5 — should show JavaScript content",
+    "curl -s -o /dev/null -w '%{http_code}' http://localhost:8080/ — should return 200",
+    "curl -s -X POST http://localhost:8080/predict_single -H 'Content-Type: application/json' -d '{\"CreditScore\":619,\"Age\":42,\"Tenure\":2,\"Balance\":0,\"NumOfProducts\":1,\"HasCrCard\":1,\"IsActiveMember\":1,\"EstimatedSalary\":101348.88}' — should still return valid JSON (endpoint still works with frontend mounted)",
+    "Kill the server: lsof -ti:8080 | xargs kill -9 2>/dev/null"
+  ],
+  "blocked_reason": null,
+  "findings": "All 4 steps implemented and verified. GET / returns index.html (200), GET /static/style.css and /static/script.js return 200, POST /predict_single still works correctly with frontend mounted (returns churn_probability and prediction). The @app.get('/') route is defined before app.mount('/static', ...) to avoid 404. Server starts in ~4 seconds."
+}

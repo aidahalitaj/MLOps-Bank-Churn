@@ -14,7 +14,8 @@ from typing import List
 import pandas as pd
 from fastapi import Body, FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import JSONResponse
+from fastapi.responses import FileResponse, JSONResponse
+from fastapi.staticfiles import StaticFiles
 from joblib import load
 from pydantic import BaseModel
 
@@ -142,6 +143,14 @@ def collect_batch(json_list, batch_size_thres = min_batch_size, batch = []):
             df_p_val.to_sql('p_val_table', con=conn, if_exists='append', index=False)
         engine.dispose()
         batch.clear()
+
+static_dir = Path(__file__).parent / 'static'
+
+@app.get('/')
+async def root():
+    return FileResponse(static_dir / 'index.html')
+
+app.mount('/static', StaticFiles(directory=static_dir), name='static')
 
 if __name__ == "__main__":
     uvicorn.run(app, host="0.0.0.0", port=8080)
