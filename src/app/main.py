@@ -14,6 +14,7 @@ from typing import List
 import pandas as pd
 from fastapi import Body, FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import JSONResponse
 from joblib import load
 from pydantic import BaseModel
 
@@ -33,7 +34,9 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-DATABASE_URL = os.environ['DATABASE_URL'].replace('postgres://', 'postgresql://')
+DATABASE_URL = os.environ.get('DATABASE_URL')
+if DATABASE_URL:
+    DATABASE_URL = DATABASE_URL.replace('postgres://', 'postgresql://')
 
 params = load_params(params_path='params.yaml')
 
@@ -42,7 +45,11 @@ feat_cols = params.features.cols
 
 min_batch_size = params.drift_detect.min_batch_size
 
-cd = load_detector(Path('models')/'drift_detector')
+try:
+    cd = load_detector(Path('models')/'drift_detector')
+except Exception as e:
+    print(f"Warning: Could not load drift detector: {e}")
+    cd = None
 model = load(filename=model_path)
 
 
@@ -88,13 +95,24 @@ async def predict(info: Request = Body(..., example={
     json_list = json.loads(info.json())
     data = json_list['data']
     input_data = pd.DataFrame(data)
-    probs = model.predict_proba(input_data)[:,0]
+    probs = model.predict_proba(input_data)[:,1]
     probs = probs.tolist()
     collect_batch(json_list) 
     return probs
 
+@app.post("/predict_single")
+async def predict_single(customer: Customer):
+    input_data = pd.DataFrame([customer.dict()])
+    churn_prob = float(model.predict_proba(input_data)[:,1][0])
+    return {
+        'churn_probability': round(churn_prob, 4),
+        'prediction': 'Churn' if churn_prob >= 0.5 else 'No Churn'
+    }
+
 @app.get("/drift_data")
 async def get_drift_data():
+    if not DATABASE_URL:
+        return JSONResponse(status_code=503, content={"message": "Database not configured"})
     engine = create_engine(DATABASE_URL)
     with engine.connect() as conn:
         sql_query = "SELECT * FROM p_val_table"
@@ -104,6 +122,8 @@ async def get_drift_data():
     return json.dumps(parsed) 
 
 def collect_batch(json_list, batch_size_thres = min_batch_size, batch = []):
+    if not DATABASE_URL or cd is None:
+        return
     data = json_list['data']
     for req_json in data:
         batch.append(req_json)

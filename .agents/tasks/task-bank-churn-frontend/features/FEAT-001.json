@@ -1,0 +1,32 @@
+{
+  "id": "FEAT-001",
+  "type": "fix",
+  "description": "Fix the predict endpoint bug, add a predict_single endpoint, and make DATABASE_URL and drift detector optional so the app starts standalone without a PostgreSQL database or drift detector files. All changes are in src/app/main.py only. This feature is independent of FEAT-002 in terms of file conflicts (both touch main.py, but FEAT-001 modifies existing code while FEAT-002 adds new imports and routes), but FEAT-002 depends on FEAT-001's /predict_single endpoint.",
+  "status": "completed",
+  "steps": [
+    "Step 1 — Make DATABASE_URL optional: In src/app/main.py, change `DATABASE_URL = os.environ['DATABASE_URL'].replace('postgres://', 'postgresql://')` to `DATABASE_URL = os.environ.get('DATABASE_URL')` followed by `if DATABASE_URL: DATABASE_URL = DATABASE_URL.replace('postgres://', 'postgresql://')`. This is near line 38.",
+    "Step 2 — Wrap drift detector load: Wrap the `cd = load_detector(Path('models')/'drift_detector')` call (near line 44) in a try/except block that catches Exception and sets `cd = None` with a print warning. This ensures the app starts even without drift detector files.",
+    "Step 3 — Guard GET /drift_data: In the `get_drift_data()` function, add an early check: `if not DATABASE_URL: return JSONResponse(status_code=503, content={\"message\": \"Database not configured\"})`. Add `from fastapi.responses import JSONResponse` to imports.",
+    "Step 4 — Guard collect_batch: At the top of the `collect_batch()` function, add `if not DATABASE_URL or cd is None: return`. This prevents any DB writes or drift detection when dependencies are unavailable.",
+    "Step 5 — Fix POST /predict: Change `model.predict_proba(input_data)[:,0]` to `model.predict_proba(input_data)[:,1]` in the predict() function. This fixes the bug where it returned probability of NOT churning instead of churning. Keep everything else in the endpoint unchanged.",
+    "Step 6 — Add POST /predict_single: Add a new endpoint after the existing /predict endpoint. It accepts a bare Customer body (not wrapped in Request): `@app.post('/predict_single') async def predict_single(customer: Customer):`. Build a single-row DataFrame from customer.dict(), call model.predict_proba()[:,1][0] to get churn_probability (float). Return `{'churn_probability': round(churn_prob, 4), 'prediction': 'Churn' if churn_prob >= 0.5 else 'No Churn'}`."
+  ],
+  "acceptance_criteria": [
+    "App starts successfully without DATABASE_URL env var: `PYTHONPATH=/Users/aida/Desktop/MLOps-Bank-Churn uvicorn src.app.main:app --host 0.0.0.0 --port 8080` does not crash",
+    "GET /drift_data returns 503 JSON response with message 'Database not configured' when DATABASE_URL is not set",
+    "POST /predict returns churn probabilities (class 1) — values should be low for a clearly non-churning customer",
+    "POST /predict_single accepts a bare Customer JSON body and returns {churn_probability: float, prediction: 'Churn'|'No Churn'}",
+    "POST /predict still works with the original Request body format (backward compatible)",
+    "Existing Pydantic models Customer and Request are unchanged"
+  ],
+  "verification": [
+    "lsof -ti:8080 | xargs kill -9 2>/dev/null",
+    "Start the app in background: source /Users/aida/Desktop/MLOps-Bank-Churn/.venv/bin/activate && PYTHONPATH=/Users/aida/Desktop/MLOps-Bank-Churn uvicorn src.app.main:app --host 0.0.0.0 --port 8080 &",
+    "Wait 5 seconds for startup, then: curl -s -X POST http://localhost:8080/predict -H 'Content-Type: application/json' -d '{\"data\":[{\"CreditScore\":619,\"Age\":42,\"Tenure\":2,\"Balance\":0,\"NumOfProducts\":1,\"HasCrCard\":1,\"IsActiveMember\":1,\"EstimatedSalary\":101348.88}]}' — should return a JSON array with a float",
+    "curl -s -X POST http://localhost:8080/predict_single -H 'Content-Type: application/json' -d '{\"CreditScore\":619,\"Age\":42,\"Tenure\":2,\"Balance\":0,\"NumOfProducts\":1,\"HasCrCard\":1,\"IsActiveMember\":1,\"EstimatedSalary\":101348.88}' — should return JSON with churn_probability and prediction fields",
+    "curl -s http://localhost:8080/drift_data — should return 503 with Database not configured message",
+    "Kill the server: lsof -ti:8080 | xargs kill -9 2>/dev/null"
+  ],
+  "blocked_reason": null,
+  "findings": "All 6 steps implemented and verified. POST /predict_single is available at /predict_single accepting a bare Customer JSON body. Drift detector failed to load (missing files) but was caught gracefully — cd is None. FEAT-002 can rely on /predict_single returning {churn_probability: float, prediction: string}. The app starts cleanly without DATABASE_URL."
+}
