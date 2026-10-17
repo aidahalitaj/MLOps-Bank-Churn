@@ -5,7 +5,8 @@ on:
   push:
     paths:
       - "data/**"
-      - "src/**"
+      - "src/stages/**"
+      - "src/utils/**"
       - "params.yaml"
       - "dvc.*"
 jobs:
