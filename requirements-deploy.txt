@@ -1,0 +1,12 @@
+# Deployment-only dependencies (lean image for serving)
+fastapi
+uvicorn
+pandas
+scikit-learn==1.2.2
+xgboost
+joblib
+python-box
+pyyaml
+alibi-detect
+sqlalchemy
+psycopg2-binary

@@ -1,4 +1,7 @@
 .dvc
+.venv
+.git
+.github
 data
 notebooks
 reports
