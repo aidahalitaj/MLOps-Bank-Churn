@@ -17,18 +17,14 @@
   <!-- Hero section -->
   <section class="hero">
     <h1 class="hero-title">Customer Churn Risk Assessment</h1>
-    <p class="hero-subtitle">Predict whether a bank customer will leave — Random Forest · 10K records</p>
-    <div class="hero-metrics">
-      <span class="metric-pill">F1: 0.54</span>
-      <span class="metric-pill">AUC: 0.87</span>
-    </div>
+    <p class="hero-subtitle">Predict whether a bank customer will leave based on key demographic and account features</p>
   </section>
 
   <!-- Sample profile cards -->
   <section class="profiles-section">
     <span class="profiles-label">SAMPLE PROFILES</span>
     <div class="profiles-row">
-      <button type="button" class="profile-card" id="profile-loyal"
+      <button type="button" class="profile-card safe" id="profile-loyal"
         data-creditscore="750" data-age="35" data-tenure="8"
         data-balance="76000" data-numofproducts="2" data-hascrcard="1"
         data-isactivemember="1" data-estimatedsalary="101000">
@@ -36,7 +32,7 @@
         <span class="profile-name">Loyal</span>
         <span class="profile-desc">35yo · 8yr · Active</span>
       </button>
-      <button type="button" class="profile-card" id="profile-atrisk"
+      <button type="button" class="profile-card risk" id="profile-atrisk"
         data-creditscore="580" data-age="52" data-tenure="1"
         data-balance="120000" data-numofproducts="1" data-hascrcard="1"
         data-isactivemember="0" data-estimatedsalary="42000">
@@ -44,7 +40,7 @@
         <span class="profile-name">At-Risk</span>
         <span class="profile-desc">52yo · 1yr · Inactive</span>
       </button>
-      <button type="button" class="profile-card" id="profile-new"
+      <button type="button" class="profile-card unknown" id="profile-new"
         data-creditscore="680" data-age="28" data-tenure="0"
         data-balance="15000" data-numofproducts="1" data-hascrcard="0"
         data-isactivemember="1" data-estimatedsalary="55000">
@@ -65,79 +61,116 @@
         <div class="form-grid">
 
           <div class="form-group">
-            <label for="CreditScore">Credit Score</label>
-            <input type="number" id="CreditScore" name="CreditScore"
-                   min="300" max="850" placeholder="650" required>
-            <span class="field-hint">300–850</span>
-          </div>
-
-          <div class="form-group">
-            <label for="Age">Age</label>
-            <input type="number" id="Age" name="Age"
-                   min="18" max="100" placeholder="35" required>
-          </div>
-
-          <div class="form-group">
-            <label for="Tenure">Tenure (years)</label>
-            <input type="number" id="Tenure" name="Tenure"
-                   min="0" max="10" placeholder="5" required>
-          </div>
-
-          <div class="form-group">
-            <label for="Balance">Account Balance</label>
-            <div class="input-prefix-wrap">
-              <span class="input-prefix">$</span>
-              <input type="number" id="Balance" name="Balance"
-                     step="0.01" placeholder="76,000" required>
+            <div class="label-row">
+              <label for="CreditScore">Credit Score</label>
+              <input type="number" class="slider-number" id="CreditScore-num"
+                     min="300" max="850" step="1" value="650"
+                     aria-label="Credit Score exact value">
             </div>
+            <input type="range" id="CreditScore" name="CreditScore"
+                   min="300" max="850" value="650" step="10"
+                   aria-label="Credit Score, range 300 to 850">
+            <span class="field-hint">Creditworthiness rating, 300–850</span>
           </div>
 
           <div class="form-group">
-            <label for="NumOfProducts">Num. Products</label>
-            <select id="NumOfProducts" name="NumOfProducts" required>
-              <option value="1">1</option>
-              <option value="2" selected>2</option>
-              <option value="3">3</option>
-              <option value="4">4</option>
-            </select>
-          </div>
-
-          <div class="form-group">
-            <label for="EstimatedSalary">Estimated Salary</label>
-            <div class="input-prefix-wrap">
-              <span class="input-prefix">$</span>
-              <input type="number" id="EstimatedSalary" name="EstimatedSalary"
-                     step="0.01" placeholder="50,000" required>
+            <div class="label-row">
+              <label for="Age">Age</label>
+              <input type="number" class="slider-number" id="Age-num"
+                     min="18" max="100" step="1" value="35"
+                     aria-label="Age exact value">
             </div>
+            <input type="range" id="Age" name="Age"
+                   min="18" max="100" value="35"
+                   aria-label="Age, range 18 to 100">
+            <span class="field-hint">Customer's current age</span>
           </div>
 
           <div class="form-group">
-            <label>Credit Card</label>
+            <div class="label-row">
+              <label for="Tenure">Tenure (years)</label>
+              <input type="number" class="slider-number" id="Tenure-num"
+                     min="0" max="10" step="1" value="5"
+                     aria-label="Tenure exact value in years">
+            </div>
+            <input type="range" id="Tenure" name="Tenure"
+                   min="0" max="10" value="5"
+                   aria-label="Tenure in years, range 0 to 10">
+            <span class="field-hint">Years as a bank customer</span>
+          </div>
+
+          <div class="form-group">
+            <div class="label-row">
+              <label for="Balance">Account Balance</label>
+              <input type="text" class="slider-number currency-input" id="Balance-num"
+                     value="$76,000" inputmode="numeric"
+                     aria-label="Account Balance exact value">
+            </div>
+            <input type="range" id="Balance" name="Balance"
+                   min="0" max="500000" value="76000" step="1000"
+                   aria-label="Account Balance, range $0 to $500,000">
+            <span class="field-hint">Current balance in bank account</span>
+          </div>
+
+          <div class="form-group">
+            <div class="label-row">
+              <label for="NumOfProducts">Bank Products</label>
+              <input type="number" class="slider-number" id="NumOfProducts-num"
+                     min="1" max="4" step="1" value="2"
+                     aria-label="Number of Bank Products exact value">
+            </div>
+            <input type="range" id="NumOfProducts" name="NumOfProducts"
+                   min="1" max="4" value="2" step="1"
+                   aria-label="Bank Products, range 1 to 4">
+            <span class="field-hint">Products held — savings, cards, loans, etc.</span>
+          </div>
+
+          <div class="form-group">
+            <div class="label-row">
+              <label for="EstimatedSalary">Estimated Salary</label>
+              <input type="text" class="slider-number currency-input" id="EstimatedSalary-num"
+                     value="$50,000" inputmode="numeric"
+                     aria-label="Estimated Salary exact value">
+            </div>
+            <input type="range" id="EstimatedSalary" name="EstimatedSalary"
+                   min="0" max="500000" value="50000" step="1000"
+                   aria-label="Estimated Salary, range $0 to $500,000">
+            <span class="field-hint">Estimated annual income</span>
+          </div>
+
+          <div class="form-group">
+            <label id="HasCrCard-label">Credit Card</label>
             <div class="toggle-group">
               <span class="toggle-label">No</span>
               <label class="toggle-switch">
-                <input type="checkbox" id="HasCrCard" name="HasCrCard" checked>
+                <input type="checkbox" id="HasCrCard" name="HasCrCard" checked
+                       role="switch" aria-checked="true"
+                       aria-labelledby="HasCrCard-label">
                 <span class="toggle-slider"></span>
               </label>
               <span class="toggle-label">Yes</span>
             </div>
+            <span class="field-hint">Holds a credit card with the bank</span>
           </div>
 
           <div class="form-group">
-            <label>Active Member</label>
+            <label id="IsActiveMember-label">Active Member</label>
             <div class="toggle-group">
               <span class="toggle-label">No</span>
               <label class="toggle-switch">
-                <input type="checkbox" id="IsActiveMember" name="IsActiveMember" checked>
+                <input type="checkbox" id="IsActiveMember" name="IsActiveMember" checked
+                       role="switch" aria-checked="true"
+                       aria-labelledby="IsActiveMember-label">
                 <span class="toggle-slider"></span>
               </label>
               <span class="toggle-label">Yes</span>
             </div>
+            <span class="field-hint">Actively uses bank services</span>
           </div>
 
         </div>
 
-        <button type="submit" id="predict-btn" class="btn-predict">Assess Churn Risk</button>
+        <p class="model-note"><em>This model uses 8 demographic and account features. Geography and gender were excluded during training.</em></p>
         <div id="error-message" class="error-message" role="alert"></div>
       </form>
     </div>
@@ -149,11 +182,11 @@
       <!-- Placeholder state -->
       <div id="insights-placeholder" class="insights-placeholder">
         <span class="placeholder-icon" aria-hidden="true">📊</span>
-        <p>Enter customer details and click predict to see risk analysis</p>
+        <p>Adjust customer details to see live risk analysis</p>
       </div>
 
       <!-- Result state (hidden until prediction) -->
-      <div id="insights-result" class="insights-result">
+      <div id="insights-result" class="insights-result" aria-live="polite">
 
         <div id="result-header" class="result-header">
           <div class="result-header-left">
@@ -166,11 +199,13 @@
           <span id="result-badge" class="result-badge">—</span>
         </div>
 
-        <!-- Gauge bar -->
+        <!-- Gauge bar with benchmark -->
         <div class="gauge-container">
           <div class="gauge-track">
             <div id="gauge-fill" class="gauge-fill"></div>
           </div>
+          <div class="gauge-benchmark" aria-hidden="true"></div>
+          <span class="gauge-benchmark-label" aria-hidden="true">avg: 20%</span>
         </div>
 
         <!-- Assessment text -->
@@ -178,29 +213,13 @@
           <p id="assessment-text"></p>
         </div>
 
-        <!-- Key factors 2x2 grid -->
-        <div class="factors-grid">
-          <div class="factor-card" id="factor-age">
-            <span class="factor-name">Age</span>
-            <span class="factor-value" id="factor-age-val">—</span>
-            <span class="factor-risk" id="factor-age-risk">—</span>
-          </div>
-          <div class="factor-card" id="factor-products">
-            <span class="factor-name">Products</span>
-            <span class="factor-value" id="factor-products-val">—</span>
-            <span class="factor-risk" id="factor-products-risk">—</span>
-          </div>
-          <div class="factor-card" id="factor-active">
-            <span class="factor-name">Active Member</span>
-            <span class="factor-value" id="factor-active-val">—</span>
-            <span class="factor-risk" id="factor-active-risk">—</span>
-          </div>
-          <div class="factor-card" id="factor-tenure">
-            <span class="factor-name">Tenure</span>
-            <span class="factor-value" id="factor-tenure-val">—</span>
-            <span class="factor-risk" id="factor-tenure-risk">—</span>
-          </div>
+        <!-- What-if suggestion -->
+        <div id="whatif-box" class="whatif-box">
+          <p id="whatif-text"></p>
         </div>
+
+        <!-- Key factors grid (dynamically populated, sorted by risk) -->
+        <div class="factors-grid" id="factors-grid"></div>
 
         <p class="factors-footer"><em>Based on feature importance ranking from the trained model.</em></p>
       </div>
