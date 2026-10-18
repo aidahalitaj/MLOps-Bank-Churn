@@ -1,48 +1,182 @@
-# E2E ML project using open-source MLOps tools
-This repository is my implementation of an end-to-end ML project using open-source MLOps tools, based on Alexis’ O’Reilly tutorial: https://www.oreilly.com/live-events/open-source-mlops-in-4-weeks/0636920080215/.
+# ChurnPredict — Bank Customer Churn Prediction
 
-I used the tutorial as a starting point for the overall structure, but I refactored and reorganised parts of the codebase to make it clearer and more maintainable, and to better match how I would set up a real project.
+[![Python 3.10](https://img.shields.io/badge/python-3.10-blue.svg)](https://www.python.org/downloads/)
+[![FastAPI](https://img.shields.io/badge/FastAPI-0.100+-green.svg)](https://fastapi.tiangolo.com)
+[![DVC](https://img.shields.io/badge/DVC-pipeline-yellow.svg)](https://dvc.org)
+[![Deployed on Fly.io](https://img.shields.io/badge/deployed-Fly.io-purple.svg)](https://fly.io)
 
-**Branches and project progression**
+End-to-end MLOps project covering the full lifecycle: data pipeline, model training, experiment tracking, API serving, interactive frontend, CI/CD, cloud deployment, and data drift monitoring.
 
-I kept the work split by week to show how the project evolved step by step:
+**[Live Demo →](https://churn-prediction-app.fly.dev)**
 
-- `main` contains the latest version.
-- `week-1` to `week-4` keep the week-by-week progress from the course structure:
-    - week-1 → kick-starting the ML project (project lifecycle, initial structure, baseline training)
-    - week-2 → ML pipelines, reproducibility, and experimentation (moving from notebook workflow to a reproducible pipeline, versioning artefacts)
-    - week-3 → CI/CD for ML and an ML-based Web API (testing, automation, FastAPI integration)
-    - week-4 → monitoring for ML projects (data drift monitoring, Alibi Detect, monitoring workflow)
+![ChurnPredict UI](docs/screenshot.png)
 
-## Problem Description and Dataset
-This dataset contains 10,000 records, each of which corresponds to a different bank's user. The target is `Exited`, a binary variable that describes whether the user decided to leave the bank. There are row and customer identifiers, four columns describing personal information about the user (surname, location, gender and age), and some other columns containing information related to the loan (such as credit score, the current balance in the user's account and whether they are an active member among others).
+## Tech Stack
 
-Dataset source: https://www.kaggle.com/datasets/filippoo/deep-learning-az-ann
+| Category | Tools |
+|----------|-------|
+| ML | Python, scikit-learn, pandas |
+| Pipeline | DVC (data versioning + orchestration) |
+| API | FastAPI, Uvicorn |
+| Frontend | Vanilla HTML/CSS/JS |
+| Monitoring | Alibi Detect (TabularDrift), PostgreSQL |
+| Deployment | Docker, Fly.io |
+| CI/CD | GitHub Actions |
 
-## Use Case
-The objective is to train an ML model that returns the probability of a customer churning. This is a binary classification task, therefore F1-score is a good metric to evaluate the performance of this dataset as it weights recall and precision equally, and a good retrieval algorithm will maximize both precision and recall simultaneously.
+## Features
 
+- **Interactive prediction UI** — reactive sliders for each feature, instant churn probability
+- **Sample customer profiles** — pre-filled templates to demo different risk levels
+- **What-if analysis** — tweak individual features and see how predictions change
+- **Risk factor breakdown** — shows which features contribute most to the prediction
+- **Data drift monitoring** — statistical tests on incoming data, stored in PostgreSQL
 
-## Setup
-Python 3.8+ is required to run code from this repo.
+## Project Structure
+
 ```
-$ git clone https://github.com/aidahalitaj/bank-churn-mlops.git
-$ cd bank-churn-mlops
-$ virtualenv -p python3 .venv
-$ source .venv/bin/activate
-$ pip install -r requirements.txt
+├── src/
+│   ├── app/
+│   │   ├── main.py              # FastAPI app, endpoints, drift collection
+│   │   └── static/              # Frontend (HTML, CSS, JS)
+│   ├── stages/
+│   │   ├── prepare.py           # Data loading, feature selection, train/test split
+│   │   ├── train.py             # Model training
+│   │   ├── evaluate.py          # Metrics, feature importance, confusion matrix
+│   │   └── drift_detector.py    # Train Alibi Detect drift detector
+│   └── utils/
+│       └── load_params.py       # Config loader
+├── data/
+│   ├── raw.dvc                  # DVC-tracked raw data
+│   └── processed/               # Train/test splits (generated)
+├── models/
+│   ├── clf-model.joblib         # Trained model
+│   └── drift_detector/          # Serialised drift detector
+├── reports/
+│   ├── metrics.json             # F1, ROC AUC
+│   ├── feat_imp.csv             # Feature importance scores
+│   └── figures/cm.png           # Confusion matrix plot
+├── notebooks/                   # Exploration & testing notebooks
+├── .github/workflows/
+│   ├── train-model.yaml         # Retrain on data/code changes
+│   └── deploy-api.yaml          # Deploy on tag push
+├── dvc.yaml                     # Pipeline definition
+├── params.yaml                  # All model & pipeline config
+├── Dockerfile                   # Production container
+├── fly.toml                     # Fly.io deployment config
+└── requirements.txt             # Dev dependencies
 ```
 
-## What's inside
+## ML Pipeline
+
+Four DVC stages, fully reproducible with `dvc repro`:
+
+```
+prepare → train → evaluate → train_drift_detector
+```
+
+| Stage | What it does |
+|-------|-------------|
+| `prepare` | Loads raw CSVs (France, Spain), selects features, splits train/test |
+| `train` | Trains the active model on processed data |
+| `evaluate` | Computes metrics, feature importance, confusion matrix |
+| `train_drift_detector` | Fits an Alibi Detect TabularDrift detector on training data |
+
+### Model Options
+
+Configured in `params.yaml` — switch by changing `model.name`:
+
+| Model | Status |
+|-------|--------|
+| Random Forest | **Active** (n_estimators=200, max_depth=10) |
+| Logistic Regression | Available |
+| Decision Tree | Available |
+| SVM (RBF) | Available |
+| XGBoost | Available |
+
+### Current Metrics
+
+| Metric | Score |
+|--------|-------|
+| F1 Score | 0.54 |
+| ROC AUC | 0.87 |
+
+### Feature Importance
+
+| Rank | Feature | Importance |
+|------|---------|-----------|
+| 1 | Age | 0.231 |
+| 2 | NumOfProducts | 0.188 |
+| 3 | IsActiveMember | 0.133 |
+| 4 | Balance | 0.027 |
+| 5 | Tenure | 0.018 |
+| 6 | CreditScore | 0.008 |
+| 7 | HasCrCard | -0.003 |
+| 8 | EstimatedSalary | -0.003 |
+
+## API Endpoints
+
+| Method | Path | Description |
+|--------|------|-------------|
+| `GET` | `/` | Serves the interactive frontend |
+| `POST` | `/predict_single` | Single customer prediction — returns churn probability and label |
+| `POST` | `/predict` | Batch prediction — accepts a list of customers, returns probabilities |
+| `GET` | `/drift_data` | Returns drift p-values from PostgreSQL |
+
+**Example — single prediction:**
+
 ```bash
-$ tree 
-.
-├── Churn_Modelling_France.csv # raw data file
-├── Churn_Modelling_Spain.csv # raw data file
-├── LICENSE
-├── README.md # this file
-├── TODO.md # describes next steps
-├── TrainChurnModel.ipynb # jupyter notebook with model training code
-├── clf-model.joblib # saved model
-└── feat_imp.csv # table with feature importance values
+curl -X POST https://churn-prediction-app.fly.dev/predict_single \
+  -H "Content-Type: application/json" \
+  -d '{"CreditScore":619,"Age":42,"Tenure":2,"Balance":0,"NumOfProducts":1,"HasCrCard":1,"IsActiveMember":1,"EstimatedSalary":101348.88}'
 ```
+
+## Local Setup
+
+```bash
+git clone https://github.com/aidahalitaj/bank-churn-mlops.git
+cd bank-churn-mlops
+python -m venv .venv
+source .venv/bin/activate
+pip install -r requirements.txt
+
+# Pull data and models
+dvc pull
+
+# Run the server
+uvicorn src.app.main:app --host 0.0.0.0 --port 8080
+```
+
+Open [http://localhost:8080](http://localhost:8080) in your browser.
+
+## Deployment
+
+The app runs on **Fly.io** in a Docker container (London region, shared CPU, 1 GB RAM).
+
+Machines auto-stop when idle and auto-start on incoming requests — zero cost when not in use.
+
+### CI/CD
+
+Two GitHub Actions workflows:
+
+- **`train-model`** — triggers on push to `main` when data, pipeline stages, or params change. Runs `dvc exp run`, pushes artifacts, and posts a metrics report as a commit comment.
+- **`deploy`** — triggers on tag push matching `deploy-v*`. Pulls the model with DVC, builds the Docker image, and deploys to Fly.io.
+
+```bash
+# Deploy a new version
+git tag deploy-v1.0.0
+git push origin deploy-v1.0.0
+```
+
+## Drift Monitoring
+
+Incoming prediction requests are collected in batches (minimum 50). When a batch fills, **Alibi Detect's TabularDrift** (Kolmogorov-Smirnov test) runs per-feature statistical tests comparing the batch against training data. The resulting p-values are stored in PostgreSQL and available via the `/drift_data` endpoint.
+
+## Dataset
+
+[Kaggle — Deep Learning A-Z: ANN](https://www.kaggle.com/datasets/filippoo/deep-learning-az-ann) — 10,000 bank customer records with 8 features and a binary target (`Exited`).
+
+Features: CreditScore, Age, Tenure, Balance, NumOfProducts, HasCrCard, IsActiveMember, EstimatedSalary.
+
+## Author
+
+**Aida Halitaj** — [aidahalitaj.github.io](https://aidahalitaj.github.io)
