@@ -3,6 +3,8 @@
 name: train-model
 on:
   push:
+    branches:
+      - main
     paths:
       - "data/**"
       - "src/stages/**"
