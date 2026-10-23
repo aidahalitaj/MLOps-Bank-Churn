@@ -117,4 +117,4 @@ dmypy.json
 .pyre/
 .DS_Store
 
-cleanup.py
+cleanup.py.agents/

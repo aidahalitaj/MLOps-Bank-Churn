@@ -98,7 +98,10 @@ async def predict(info: Request = Body(..., example={
     input_data = pd.DataFrame(data)
     probs = model.predict_proba(input_data)[:,1]
     probs = probs.tolist()
-    collect_batch(json_list) 
+    try:
+        collect_batch(json_list)
+    except Exception as e:
+        print(f"Warning: drift batch collection failed: {e}")
     return probs
 
 @app.post("/predict_single")
@@ -114,13 +117,16 @@ async def predict_single(customer: Customer):
 async def get_drift_data():
     if not DATABASE_URL:
         return JSONResponse(status_code=503, content={"message": "Database not configured"})
-    engine = create_engine(DATABASE_URL)
-    with engine.connect() as conn:
-        sql_query = "SELECT * FROM p_val_table"
-        df_p_val = pd.read_sql(sql_query, con=conn)
-    engine.dispose()
-    parsed = json.loads(df_p_val.to_json())
-    return json.dumps(parsed) 
+    try:
+        engine = create_engine(DATABASE_URL)
+        with engine.connect() as conn:
+            sql_query = "SELECT * FROM p_val_table"
+            df_p_val = pd.read_sql(sql_query, con=conn)
+        engine.dispose()
+        parsed = json.loads(df_p_val.to_json())
+        return json.dumps(parsed)
+    except Exception:
+        return JSONResponse(status_code=200, content={"message": "No drift data yet — table is created after 50+ predictions"}) 
 
 def collect_batch(json_list, batch_size_thres = min_batch_size, batch = []):
     if not DATABASE_URL or cd is None:
